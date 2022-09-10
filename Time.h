@@ -24,7 +24,6 @@ class Time
 public:
     Time();
     Time(int hours, int minutes, int seconds, int ms = 0);
-
     Time(std::string time_string);
 
     std::string to_string(TimeFormat setting = TimeFormat::Format24h) const;
@@ -32,10 +31,12 @@ public:
     int get_hour() const;
     int get_minute() const;
     int get_second() const;
-    
+    int get_ms() const;
+
     Time& operator++();
     Time operator++(int);
 
+    float operator-(const Time &rhs) const;
     bool operator<(const Time &rhs) const;
     bool operator>(const Time &rhs) const;
     bool operator<=(const Time &rhs) const;
@@ -44,10 +45,10 @@ public:
     bool operator!=(const Time &rhs) const;
 
 private:
-    bool valid_time(int hours, int minutes, int seconds) const;
-    int time_in_seconds() const;
+    bool valid_time(const int hours, const int minutes, const int seconds, const int ms) const;
+    int time_in_ms() const;
 
-
+    std::string format_string(const int hours, const int minutes, const int seconds, const int ms) const;
 
 private:
     int m_hours;
