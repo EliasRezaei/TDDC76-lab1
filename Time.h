@@ -53,7 +53,7 @@ private:
     int m_hours;
     int m_minutes;
     int m_seconds;
-    int m_ms;
+    int m_ms; // added ms
 
 
 };
