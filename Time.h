@@ -49,6 +49,8 @@ private:
     int time_in_ms() const;
 
     std::string format_string(const int hours, const int minutes, const int seconds, const int ms) const;
+    void increment_time(int& hours, int& minutes, int& seconds) const;
+
 
 private:
     int m_hours;

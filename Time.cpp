@@ -11,14 +11,14 @@ std::ostream& operator<<(std::ostream& os, const Time& rhs)
 
 
 Time::Time()
-    : m_hours(0), m_minutes(0), m_seconds(0), m_ms(0)
+    : m_hours{0}, m_minutes{0}, m_seconds{0}, m_ms{0}
 {
 
 }
 
 
 Time::Time(int hours, int minutes, int seconds, int ms)
-    : m_hours(hours), m_minutes(minutes), m_seconds(seconds), m_ms(ms)
+    : m_hours{hours}, m_minutes{minutes}, m_seconds{seconds}, m_ms{ms}
 {
     if (!valid_time(hours, minutes, seconds, ms))
     {
@@ -54,7 +54,6 @@ Time::Time(std::string time_string)
         throw std::logic_error("Not a valid input! don't use letters for minutes, use numbers");
     }
 
-
     getline(time_stream, str, '.');
     try
     {
@@ -64,7 +63,6 @@ Time::Time(std::string time_string)
     {
         throw std::logic_error("Not a valid input! don't use letters for seconds, use numbers");
     }
-
 
     getline(time_stream, str);
     try 
@@ -86,11 +84,11 @@ Time::Time(std::string time_string)
 
 bool Time::valid_time(const int hours, const int minutes, const int seconds, const int ms) const
 {
-    if (hours < 0 || hours > 23 || minutes < 0 || seconds < 0 || seconds > 59 || minutes > 59 || ms > 999 || ms < 0)
-        return false;
-    else
-        return true;
+    return !(hours < 0 || hours > 23 || minutes < 0 || seconds < 0 || seconds > 59 || minutes > 59 || ms > 999 || ms < 0);
+
 }
+
+
 
 std::string Time::to_string(TimeFormat setting) const
 {
@@ -115,7 +113,6 @@ std::string Time::to_string(TimeFormat setting) const
             }
             break;
         }    
-    
     }
     return res_string;
 }
@@ -137,10 +134,7 @@ std::string Time::format_string(const int hours, const int minutes, const int se
 
 bool Time::is_am() const
 {
-    if(m_hours < 12)
-        return true;
-    else
-        return false; 
+    return m_hours < 12;
 }
 
 
@@ -161,82 +155,61 @@ int Time::get_second() const
     return m_seconds;
 }
 
+
 int Time::get_ms() const
 {
     return m_ms;
 }
 
+
+// ++clock
 Time& Time::operator++()
 {
-    int hours = m_hours;
-    int minutes = m_minutes;
-    int seconds = m_seconds;
-
-    if (m_seconds == 59 )
-    {
-        seconds = 0;
-        if (m_minutes == 59)
-        {
-            minutes = 0;
-            if (m_hours == 23)
-            {
-                hours = 0;
-            }
-            else
-                hours++;
-
-        }
-        else 
-        {
-            minutes++;
-        }
-
-    }
-    else
-        seconds++;
-
-    m_hours = hours;
-    m_minutes = minutes;
-    m_seconds = seconds;
-
+    increment_time(m_hours, m_minutes, m_seconds);
     return (*this);
 }
 
+
+// ++clock.s
 Time Time::operator++(int)
 {
-    int hours = m_hours;
-    int minutes = m_minutes;
-    int seconds = m_seconds;
+    int new_hours = m_hours;
+    int new_minutes = m_minutes;
+    int new_seconds = m_seconds;
 
-    if (m_seconds == 59 )
+    increment_time(new_hours, new_minutes, new_seconds);
+
+    Time oldTime{m_hours, m_minutes, m_seconds, m_ms};
+
+    m_hours = new_hours;
+    m_minutes = new_minutes;
+    m_seconds = new_seconds;
+    
+    return oldTime;
+}
+
+void Time::increment_time(int& hours, int& minutes, int& seconds) const
+{
+    if (seconds == 59 )
     {
         seconds = 0;
-        if (m_minutes == 59)
+        if (minutes == 59)
         {
             minutes = 0;
-            if (m_hours == 23)
-            {
+            if (hours == 23)
                 hours = 0;
-            }
             else
-                hours=m_hours+1;
+                hours++;
         }
-        else 
+        else
         {
             minutes++;
         }
-
     }
     else
+    {
         seconds++;
-
-    Time resultTime{m_hours, m_minutes, m_seconds, m_ms};
-
-    m_hours = hours;
-    m_minutes = minutes;
-    m_seconds = seconds;
-    
-    return resultTime;
+    }
 }
 
 
@@ -272,8 +245,7 @@ bool Time::operator!=(const Time &rhs) const
 
 float Time::operator-(const Time &rhs) const
 {
-    return ( float(this->time_in_ms() -(rhs.time_in_ms())) / 1000.f);
-
+    return (float(this->time_in_ms() - (rhs.time_in_ms())) / 1000.f);
 }
 
 
